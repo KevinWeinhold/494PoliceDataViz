@@ -1,0 +1,40 @@
+#Map {
+    border:1px solid gray;
+    border-radius:10px;
+    height:50vh;
+    width:55vw;
+    margin:5px;
+    margin-left: 20px;
+}
+
+#PieChart {
+    border:1px solid gray;
+    border-radius:10px;
+    height:50vh;
+    width:20vw;
+    margin:20px;
+    margin-top: 5px;
+}
+
+#Scatter {
+    border:1px solid gray;
+    border-radius:10px;
+    height:50vh;
+    width:37vw;
+    margin:20px;
+    margin-top: 5px;
+}
+
+#Novel {
+    border:1px solid gray;
+    border-radius:10px;
+    height:50vh;
+    width:37vw;
+    margin:20px;
+    margin-top: 5px;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: row;
+}
