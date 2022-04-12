@@ -133,19 +133,22 @@ function queryPoliceData() {
 
 function reducePoliceData(lineData) {
   var policeDataFrequency = {}
-  lineData.forEach(d => {
-    console.log(policeDataFrequency[d["Incident.Data.Year"]])
-    if (policeDataFrequency[d["Incident.Data.Year"]] != undefined) 
-    {
-      policeDataFrequency[d["Incident.Data.Year"]] += 1
+  lineData.forEach(e => {
+    if(policeDataFrequency[+e["Incident.Date.Year"]] != null)
+      policeDataFrequency[+e["Incident.Date.Year"]] += 1;
+    else 
+      policeDataFrequency[+e["Incident.Date.Year"]] = 1;
+  });
+  
+  var objArr = []
+  for (let i=2015; i<=2021; i++) {
+    let obj = {
+      "Year": i,
+      "Frequency": policeDataFrequency[i]
     }
-    else
-    {
-      policeDataFrequency[d["Incident.Data.Year"]] = 1;
-    }
-  })
-
-  console.log(policeDataFrequency)
+    objArr.push(obj)
+  }
+  return objArr
 }
 
 //TODO: move to file
@@ -154,17 +157,19 @@ function drawline() {
   lineSvg.selectAll("*").remove();
 
   var lineData = queryPoliceData();
-  reducePoliceData(lineData)
+  lineData = reducePoliceData(lineData);
+  // console.log(lineData)
+
+  // let max = d3.max(lineData, d => +d["Frequency"])
+  // let min = d3.min(lineData, d => +d["Frequency"])
+
   //axes
   var x = d3.scaleTime()
-                  .domain([new Date("2015"), new Date("2019")])
+                  .domain([new Date(year = 2015), new Date(year = 2021)])
                   .range([lineMargin.left, lineInnerWidth]);
 
-  let max = d3.max(lineData, d => +d["Person.Age"])
-  let min = d3.min(lineData, d => +d["Person.Age"])
-
   var y = d3.scaleLinear()
-                  .domain([max, min])
+                  .domain([60, 0])
                   .range([lineMargin.top, lineInnerHeight]);
 
   var xAxis = d3.axisBottom(x);
@@ -191,7 +196,10 @@ function drawline() {
           .call(g => g.select(".domain").remove())
           .call(g => g.selectAll(".tick line")
                       .attr("stroke-opacity", 0.5)
-                      .attr("stroke-dasharray", "5.10"))
+                      .attr("stroke-dasharray", "5.10"));
+  
+  xAxis.ticks(d3.timeYear, 1)
+        .tickFormat(d3.timeFormat('%Y'))
 
   //Axis labels
   lineSvg.append("text")
@@ -207,7 +215,7 @@ function drawline() {
       .attr("x",0 - (lineInnerHeight / 2) + 20)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("Age"); 
+      .text("Frequency"); 
 
   lineSvg.append("text")
       .attr("class", "x label")
@@ -218,9 +226,11 @@ function drawline() {
 
   var line = d3.line()
                   .x(function(d) {
-                      return x(new Date(d["Incident.Date.Full"]))})
+                    console.log(new Date(year = d["Year"]))
+                      return x(new Date(year = d["Year"]))})
                   .y(function(d) {
-                      return y(d["Person.Age"])})
+                    console.log(d["Frequency"])
+                      return y(d["Frequency"])})
   
   // Add the line
   lineSvg.append("path")
@@ -236,8 +246,8 @@ function drawline() {
           .data(lineData)
           .enter()
           .append("circle")
-          .attr("cx", function (d) { return x(new Date(d["Incident.Date.Full"])); } )
-          .attr("cy", function (d) { return y(d["Person.Age"]); } )
+          .attr("cx", function (d) { return x(new Date(d["Year"])); } )
+          .attr("cy", function (d) { return y(d["Frequency"]); } )
           .attr("r", 4)
           .style("fill", "black");
 }
