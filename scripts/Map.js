@@ -2,8 +2,21 @@ var mapWidth, mapHeight, mapInnerWidth, mapInnerHeight;
 var mapMargin = { top: 10, bottom: 10, left: 10, right: 20 };
 var mapData, policeData;
 
+//TODO: move to file
+var lineWidth, lineHeight, lineInnerWidth, lineInnerHeight;
+var lineMargin = { top: 20, bottom: 30, left: 50, right: 10 };
+var lineSvg;
+
 document.addEventListener("DOMContentLoaded", () => {
   mapSvg = d3.select("#Map");
+
+  //TODO: move to file
+  lineSvg = d3.select("#Scatter");
+  lineWidth = +lineSvg.style("width").replace("px", "");
+  lineHeight = +lineSvg.style("height").replace("px", "");
+  lineInnerWidth = lineWidth - lineMargin.left - lineMargin.right;
+  lineInnerHeight = lineHeight - lineMargin.top - lineMargin.bottom;
+
 
   mapWidth = +mapSvg.style("width").replace("px", "");
   mapHeight = +mapSvg.style("height").replace("px", "");
@@ -17,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ]).then(function (values) {
     mapData = values[0];
     policeData = values[1];
-    console.log(policeData)
+    console.log(policeData);
     // stateData contains the number of occurences in each state
     stateData = {};
     policeData.forEach(e => {
@@ -28,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     console.log(stateData)
     drawMap();
+
+    //TODO: move to file
+    drawline();
+
   });
 });
 
@@ -102,4 +119,125 @@ function drawColorScale(g, colorScale) {
      .attr('y',90)
      .style('font-size','.9em')
      .text("Shootings");
+}
+
+function queryPoliceData() {
+  queried = policeData;
+  queried = queried.filter(function(d) {
+    // console.log(d["Incident.Location.State"] === "CO")
+    return d["Incident.Location.State"] === "CO"
+  });
+  console.log(queried)
+  return queried;
+}
+
+function reducePoliceData(lineData) {
+  var policeDataFrequency = {}
+  lineData.forEach(d => {
+    console.log(policeDataFrequency[d["Incident.Data.Year"]])
+    if (policeDataFrequency[d["Incident.Data.Year"]] != undefined) 
+    {
+      policeDataFrequency[d["Incident.Data.Year"]] += 1
+    }
+    else
+    {
+      policeDataFrequency[d["Incident.Data.Year"]] = 1;
+    }
+  })
+
+  console.log(policeDataFrequency)
+}
+
+//TODO: move to file
+function drawline() {
+  console.log("drawing linegraph");
+  lineSvg.selectAll("*").remove();
+
+  var lineData = queryPoliceData();
+  reducePoliceData(lineData)
+  //axes
+  var x = d3.scaleTime()
+                  .domain([new Date("2015"), new Date("2019")])
+                  .range([lineMargin.left, lineInnerWidth]);
+
+  let max = d3.max(lineData, d => +d["Person.Age"])
+  let min = d3.min(lineData, d => +d["Person.Age"])
+
+  var y = d3.scaleLinear()
+                  .domain([max, min])
+                  .range([lineMargin.top, lineInnerHeight]);
+
+  var xAxis = d3.axisBottom(x);
+  
+  var yAxis = d3.axisLeft(y);
+
+  lineSvg.append("g")
+          .attr("transform", `translate(0,${lineInnerHeight})`)
+          .call(xAxis)
+          .selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("transform", "rotate(-90)" );
+
+  lineSvg.append("g")
+          .attr("transform", `translate(${lineMargin.left},0)`)
+          .call(yAxis);
+
+  //ticks
+  lineSvg.append("g")
+          .attr("transform", `translate(${lineMargin.left}, 0)`)
+          .call(d3.axisRight(y)
+                      .tickSize(lineInnerWidth - lineMargin.left + 2)
+                      .tickFormat(""))
+          .call(g => g.select(".domain").remove())
+          .call(g => g.selectAll(".tick line")
+                      .attr("stroke-opacity", 0.5)
+                      .attr("stroke-dasharray", "5.10"))
+
+  //Axis labels
+  lineSvg.append("text")
+      .attr("class", "x label")
+      .attr("text-anchor", "middle")
+      .attr("x", lineInnerWidth / 2)
+      .attr("y", lineInnerHeight + 45)
+      .text("Year");
+
+  lineSvg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", lineMargin.left - 50)
+      .attr("x",0 - (lineInnerHeight / 2) + 20)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Age"); 
+
+  lineSvg.append("text")
+      .attr("class", "x label")
+      .attr("text-anchor", "middle")
+      .attr("x", (lineInnerWidth / 2))
+      .attr("y", lineMargin.top)
+      .text(`Seleted state: Colorado`);
+
+  var line = d3.line()
+                  .x(function(d) {
+                      return x(new Date(d["Incident.Date.Full"]))})
+                  .y(function(d) {
+                      return y(d["Person.Age"])})
+  
+  // Add the line
+  lineSvg.append("path")
+          .datum(lineData)
+          .attr("fill", "none")
+          .attr("stroke", "black")
+          .attr("stroke-width", 2)
+          .attr("d", line)
+
+  //draw points
+  lineSvg.append("g")
+          .selectAll("dot")
+          .data(lineData)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) { return x(new Date(d["Incident.Date.Full"])); } )
+          .attr("cy", function (d) { return y(d["Person.Age"]); } )
+          .attr("r", 4)
+          .style("fill", "black");
 }
