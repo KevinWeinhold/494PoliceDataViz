@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ]).then(function (values) {
     mapData = values[0];
     policeData = values[1];
-    console.log(policeData)
+    console.log(policeData);
     // stateData contains the number of occurences in each state
     stateData = {};
     policeData.forEach(e => {
