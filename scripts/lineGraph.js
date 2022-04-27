@@ -1,20 +1,6 @@
 var lineWidth, lineHeight, lineInnerWidth, lineInnerHeight;
 var lineMargin = { top: 70, bottom: 5, left: 50, right: 10 };
 var lineSvg;
-var policeData;
-
-document.addEventListener("DOMContentLoaded", () => {
-    lineSvg = d3.select("#Scatter");
-    lineWidth = +lineSvg.style("width").replace("px", "");
-    lineHeight = +lineSvg.style("height").replace("px", "");
-    lineInnerWidth = lineWidth - lineMargin.left - lineMargin.right;
-    lineInnerHeight = lineHeight - lineMargin.top - lineMargin.bottom;
-
-    Promise.all([d3.csv("data/police_shootings.csv")])
-    .then(function (values) {
-        policeData = values[0];
-    })
-})
 
 function queryPoliceData(statePostal) {
     queried = policeData;
@@ -49,6 +35,11 @@ function reducePoliceData(lineData) {
   
 //TODO: move to file
 function drawline(postal) {
+  lineSvg = d3.select("#Scatter");
+  lineWidth = +lineSvg.style("width").replace("px", "");
+  lineHeight = +lineSvg.style("height").replace("px", "");
+  lineInnerWidth = lineWidth - lineMargin.left - lineMargin.right;
+  lineInnerHeight = lineHeight - lineMargin.top - lineMargin.bottom;
   console.log("drawing linegraph");
   lineSvg.selectAll("*").remove();
 

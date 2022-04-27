@@ -1,6 +1,6 @@
 var mapWidth, mapHeight, mapInnerWidth, mapInnerHeight;
 var mapMargin = { top: 40, bottom: 20, left: 150, right: 20 };
-var mapData, policeData;
+var mapData, policeData, personSvg;
 var selectedState;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,9 +15,17 @@ document.addEventListener("DOMContentLoaded", () => {
   Promise.all([
     d3.json("data/us.geojson"),
     d3.csv("data/police_shootings.csv"),
+    d3.xml("data/person.svg")
   ]).then(function (values) {
     mapData = values[0];
     policeData = values[1];
+    personSvg = values[2].documentElement;
+    d3.select(personSvg)
+      .attr('width', '24')
+      .attr('height', '24')
+      .attr('opacity', '0')
+      .attr('class', 'death');
+      
     // stateData contains the number of occurences in each state
     stateData = {};
     policeData.forEach(e => {
@@ -78,10 +86,20 @@ function drawMap() {
     .attr("fill", (d) => {
       return colorScale(stateData[d.properties.postal])
     })
+    .style('stroke', 'grey')
     .on("click", function (d, i) {
       drawline(d.properties.postal);
       drawPie(d.properties.postal);
+      drawNovel(d.properties.postal);
       stateText.text(d.properties.name);
+    })
+    .on('mouseover', function(d){
+      d3.select(this)
+        .style('fill', 'white');
+    })
+    .on('mouseout', function(d){
+      d3.select(this)
+        .style('fill', colorScale(stateData[d.properties.postal]))
     })
     .attr('transform', `translate(${mapMargin.left}, ${mapMargin.top})`);
 }
