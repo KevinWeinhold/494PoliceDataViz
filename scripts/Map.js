@@ -1,5 +1,5 @@
 var mapWidth, mapHeight, mapInnerWidth, mapInnerHeight;
-var mapMargin = { top: 10, bottom: 10, left: 10, right: 20 };
+var mapMargin = { top: 10, bottom: 10, left: 100, right: 20 };
 var mapData, policeData;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -36,7 +36,7 @@ function drawMap() {
   // create the map projection and geoPath
   let usaProjection = d3
     .geoAlbersUsa()
-    .fitSize([mapInnerWidth, mapInnerHeight], mapData);
+    .fitSize([mapWidth+mapMargin.left, mapHeight], mapData);
   let geoPath = d3.geoPath().projection(usaProjection);
 
   let min, max;
@@ -58,12 +58,10 @@ function drawMap() {
     .classed("stateMap", true)
     .attr("id", (d) => d.properties.postal)
     .attr("fill", (d) => {
-      if(stateData[d.properties.postal] == null)
-        console.log(d.properties.postal)
       return colorScale(stateData[d.properties.postal])
     })
     .on("click", function (d, i) {
-      
+      drawline(d.properties.postal)
     });
 }
 

@@ -49,11 +49,11 @@ function queryPoliceData(statePostal) {
   }
   
   //TODO: move to file
-  function drawline() {
+  function drawline(postal) {
     console.log("drawing linegraph");
     lineSvg.selectAll("*").remove();
   
-    var lineData = queryPoliceData("CO");
+    var lineData = queryPoliceData(postal);
     lineData = reducePoliceData(lineData);
     // console.log(lineData)
   
