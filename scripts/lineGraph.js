@@ -71,7 +71,7 @@ function drawline(postal) {
   var yAxis = d3.axisLeft(y);
 
   lineSvg.append('text')
-    .attr('x', lineWidth/2-150)
+    .attr('x', 30)
     .attr('y', lineMargin.bottom+30)
     .text("Frequency of Shootings over Time")
     .style('font-size', '20px');
