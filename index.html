@@ -5,6 +5,7 @@
     <title>CSE 494 - Spring 2022 - Police Shootings Data Viz</title>
     <link rel="stylesheet" href="style/styles.css" />
     <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="scripts/pieChart.js"></script>
     <script src="scripts/lineGraph.js"></script>
     <script src="scripts/Map.js"></script>
     
@@ -14,7 +15,12 @@
   </head>
   <body>
     <div class="wrapper">
-      <svg id="Map"></svg>
+      <svg id="Map">
+        <text id="mapDesc">
+          <tspan x="0" dy="1.2em">Shows police shootings by state.</tspan>
+          <tspan x="0" dy="1.2em">Click on a state to see more data!</tspan>
+        </text>
+      </svg>
       <svg id="PieChart"></svg>
     </div>
     <div class="wrapper">
