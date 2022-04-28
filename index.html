@@ -5,11 +5,13 @@
     <title>CSE 494 - Spring 2022 - Police Shootings Data Viz</title>
     <link rel="stylesheet" href="style/styles.css" />
     <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="resources/lodash.js"></script>
     <script src="scripts/novel.js"></script>
     <script src="scripts/pieChart.js"></script>
     <script src="scripts/lineGraph.js"></script>
+    <script src="scripts/bubble.js"></script>
     <script src="scripts/Map.js"></script>
-    
+
     <div id="header">
       <h2>Police Shootings Data Viz</h2>
     </div>
@@ -28,15 +30,14 @@
       <svg id="Novel"></svg>
       <div id="ScatterDiv">
         Gender
-        <select id = 'genderSelect' class="lineSel">
+        <select id="genderSelect" class="lineSel">
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
         Race
-        <select id = 'raceSelect' class="lineSel"></select>
+        <select id="raceSelect" class="lineSel"></select>
         <svg id="Scatter"></svg>
       </div>
     </div>
-    
   </body>
 </html>
