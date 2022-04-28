@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="style/styles.css" />
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="resources/lodash.js"></script>
+    <script src="scripts/main.js"></script>
     <script src="scripts/novel.js"></script>
     <script src="scripts/pieChart.js"></script>
     <script src="scripts/lineGraph.js"></script>
@@ -29,13 +30,25 @@
     <div class="wrapper">
       <svg id="Novel"></svg>
       <div id="ScatterDiv">
-        Gender
-        <select id="genderSelect" class="lineSel">
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-        Race
-        <select id="raceSelect" class="lineSel"></select>
+        <div id="lineSelectors" hidden>
+          <label for="genderSelect">Gender</label>
+          <select id = 'genderSelect' class="lineSel">
+            <option value="All" selected>All</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+          <label for="raceSelect">Race</label>
+          <select id = 'raceSelect' class="lineSel" multiple>
+            <option value="All" selected>All</option>
+            <option value="White">White</option>
+            <option value="Hispanic">Hispanic</option>
+            <option value="Asian">Asian</option>
+            <option value="African American">African American</option>
+            <option value="Native American">Native American</option>
+            <option value="Other">Other</option>
+            <option value="Unknown">Unknown</option>
+          </select>
+        </div>
         <svg id="Scatter"></svg>
       </div>
     </div>

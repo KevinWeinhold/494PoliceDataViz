@@ -1,14 +1,29 @@
 var lineWidth, lineHeight, lineInnerWidth, lineInnerHeight;
-var lineMargin = { top: 70, bottom: 5, left: 50, right: 10 };
+var lineMargin = { top: 70, bottom: 60, left: 50, right: 10 };
 var lineSvg;
+var genderSelection = "All";
+var raceSelection = ["All"];
+var currentPostal;
 
 function queryPoliceData(statePostal) {
     queried = policeData;
     queried = queried.filter(function(d) {
-      return d["Incident.Location.State"] === statePostal
+      return d["Incident.Location.State"] === statePostal;
     });
+
+    if (genderSelection !== "All") {
+      queried = queried.filter(function(d) {
+        return d["Person.Gender"] === genderSelection;      
+      });
+    }
+
+    if (!raceSelection.includes("All")) {
+      queried = queried.filter(function(d) {
+        return raceSelection.includes(d["Person.Race"]);      
+      });
+    }
     return queried;
-  }
+}
   
 function reducePoliceData(lineData) {
   var policeDataFrequency = {}
@@ -33,8 +48,13 @@ function reducePoliceData(lineData) {
   return objArr
 }
   
-//TODO: move to file
 function drawline(postal) {
+  d3.select("#lineSelectors").property("hidden", false);
+
+  if (postal == undefined) {
+    postal = selectedStatePostal;
+  }
+
   lineSvg = d3.select("#Scatter");
   lineWidth = +lineSvg.style("width").replace("px", "");
   lineHeight = +lineSvg.style("height").replace("px", "");
@@ -42,6 +62,9 @@ function drawline(postal) {
   lineInnerHeight = lineHeight - lineMargin.top - lineMargin.bottom;
   console.log("drawing linegraph");
   lineSvg.selectAll("*").remove();
+
+  //genderSelection = d3.select("#genderSelect").property("value");
+  //d3.select("#raceSelect").property("value");
 
   var lineData = queryPoliceData(postal);
   lineData = reducePoliceData(lineData);
@@ -63,7 +86,7 @@ function drawline(postal) {
 
   lineSvg.append('text')
     .attr('x', 30)
-    .attr('y', lineMargin.bottom+30)
+    .attr('y', lineMargin.bottom - 10)
     .text("Frequency of Shootings over Time")
     .style('font-size', '20px');
 
@@ -72,7 +95,7 @@ function drawline(postal) {
           .call(xAxis)
           .selectAll("text")  
             .style("text-anchor", "end")
-            .attr("transform", "rotate(-90)" );
+            //.attr("transform", "rotate(0)" );
 
   lineSvg.append("g")
           .attr("transform", `translate(${lineMargin.left},0)`)
@@ -90,7 +113,7 @@ function drawline(postal) {
                       .attr("stroke-dasharray", "5.10"));
   
   xAxis.ticks(d3.timeYear, 1)
-        .tickFormat(d3.timeFormat('%Y'))
+        //.tickFormat(d3.timeFormat('%Y'))
 
   //Axis labels
   lineSvg.append("text")
