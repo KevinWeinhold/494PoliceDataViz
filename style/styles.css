@@ -47,3 +47,15 @@
     display: flex;
     flex-direction: row;
 }
+
+.tooltipItem {
+    border:1px solid gray;
+    border-radius:5px;
+    background-color: white;
+    position: absolute;
+    padding: 10px;
+}
+
+.bubble {
+    transform: translate(270px, 80px);
+}

@@ -106,60 +106,70 @@ function drawMap() {
     .classed("stateMap", true)
     .attr("id", (d) => d.properties.postal)
     .attr("fill", (d) => {
-      return colorScale(stateData[d.properties.postal])
+      return colorScale(stateData[d.properties.postal]);
     })
-    .style('stroke', 'grey')
+    .style("stroke", "grey")
     .on("click", function (d, i) {
       selectedStatePostal = d.properties.postal;
       drawline(d.properties.postal);
       drawPie(d.properties.postal);
       drawNovel(d.properties.postal);
+      drawBubbles(d.properties.postal);
       stateText.text(d.properties.name);
     })
-    .on('mouseover', function(d){
-      d3.select(this)
-        .style('fill', 'white');
+    .on("mouseover", function (d) {
+      d3.select(this).style("fill", "white");
     })
-    .on('mouseout', function(d){
-      d3.select(this)
-        .style('fill', colorScale(stateData[d.properties.postal]))
+    .on("mouseout", function (d) {
+      d3.select(this).style("fill", colorScale(stateData[d.properties.postal]));
     })
-    .attr('transform', `translate(${mapMargin.left}, ${mapMargin.top})`);
+    .attr("transform", `translate(${mapMargin.left}, ${mapMargin.top})`);
 }
 
 function drawColorScale(g, colorScale) {
-  const linearGradient = g.append("defs")
-                          .append("linearGradient")
-                          .attr("id", "linear-gradient");
-  linearGradient.selectAll("stop")
-                .data(colorScale.ticks()
-                .map((t, i, n) => ({ 
-                  offset: `${100*i/n.length}%`, 
-                  color: colorScale(t) })))
-                .enter()
-                  .append("stop")
-                  .attr("offset", d => d.offset)
-                  .attr("stop-color", d => d.color);
+  const linearGradient = g
+    .append("defs")
+    .append("linearGradient")
+    .attr("id", "linear-gradient");
+  linearGradient
+    .selectAll("stop")
+    .data(
+      colorScale.ticks().map((t, i, n) => ({
+        offset: `${(100 * i) / n.length}%`,
+        color: colorScale(t),
+      }))
+    )
+    .enter()
+    .append("stop")
+    .attr("offset", (d) => d.offset)
+    .attr("stop-color", (d) => d.color);
   g.append("rect")
-   .attr('transform', `translate(${mapMargin.right},${mapInnerHeight-mapMargin.bottom})`)
-   .attr("width", 200)
-   .attr("height", 20)
-   .style("fill", "url(#linear-gradient)");
-  const colorAxis = d3.axisBottom(d3.scaleLinear()
-                      .domain(colorScale.domain())
-                      .range([0,200]))
-                      .ticks(5).tickSize(-20);
-  g.append('g').call(colorAxis)
-   .attr('class','colorLegend')
-   .attr('transform',`translate(${mapMargin.right},${mapInnerHeight-mapMargin.bottom+20})`)
-   .selectAll('text')
-   .style('text-anchor','end')
-   .attr('dx','-0px')
-   .attr('dy', '0px')
-   .attr('transform','rotate(-45)');
-   g.append('text')
-     .attr('x',mapMargin.right)
-     .attr('y',mapInnerHeight-mapMargin.bottom-5)
-     .style('font-size','.9em')
-     .text("Shootings");
+    .attr(
+      "transform",
+      `translate(${mapMargin.right},${mapInnerHeight - mapMargin.bottom})`
+    )
+    .attr("width", 200)
+    .attr("height", 20)
+    .style("fill", "url(#linear-gradient)");
+  const colorAxis = d3
+    .axisBottom(d3.scaleLinear().domain(colorScale.domain()).range([0, 200]))
+    .ticks(5)
+    .tickSize(-20);
+  g.append("g")
+    .call(colorAxis)
+    .attr("class", "colorLegend")
+    .attr(
+      "transform",
+      `translate(${mapMargin.right},${mapInnerHeight - mapMargin.bottom + 20})`
+    )
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-0px")
+    .attr("dy", "0px")
+    .attr("transform", "rotate(-45)");
+  g.append("text")
+    .attr("x", mapMargin.right)
+    .attr("y", mapInnerHeight - mapMargin.bottom - 5)
+    .style("font-size", ".9em")
+    .text("Shootings");
 }
