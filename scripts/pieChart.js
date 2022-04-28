@@ -33,7 +33,7 @@ function drawPie(postal) {
     .append("text")
     .attr("x", width / 2 - 100)
     .attr("y", margin.top + 20)
-    .text("Distribution of Victims by")
+    .text(`Distribution of ${postal} Victims by`)
     .style("font-size", "20px");
 
   let genderSvg = pieSvg

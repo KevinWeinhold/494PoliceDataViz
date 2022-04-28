@@ -9,6 +9,8 @@ function filterPoliceData(statePostal) {
 }
 
 function drawBubbles(statePostal) {
+  d3.select("#tooltip").attr("hidden", true);
+
   var filteredData = filterPoliceData(statePostal);
   console.log(filteredData);
   var bubbleSVG = d3.select("#PieChart");
