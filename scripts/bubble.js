@@ -1,14 +1,17 @@
 var marginBubble = { top: 10, bottom: 10, left: 10, right: 20 };
 
-document.addEventListener("DOMContentLoaded", () => {
-  Promise.all([d3.csv("data/police_shootings.csv")]).then(function (values) {
-    policeData = values[0];
-    drawBubbles();
+function filterPoliceData(statePostal) {
+  queried = policeData;
+  queried = queried.filter(function (d) {
+    return d["Incident.Location.State"] === statePostal;
   });
-});
+  return queried;
+}
 
-function drawBubbles() {
-  var bubbleSVG = d3.select("body");
+function drawBubbles(statePostal) {
+  var filteredData = filterPoliceData(statePostal);
+  console.log(filteredData);
+  var bubbleSVG = d3.select("#PieChart");
   const width = +bubbleSVG.style("width").replace("px", "");
   const height = +bubbleSVG.style("height").replace("px", "");
   const innerWidth = width - marginBubble.left - marginBubble.right;
@@ -16,37 +19,37 @@ function drawBubbles() {
 
   // TODO: filter the police data by state
   // calculating counts
-  var hispanicCount = _.filter(policeData, function (d) {
+  var hispanicCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "Hispanic") return d;
   }).length;
   console.log("HispanicCount", hispanicCount);
 
-  var whiteCount = _.filter(policeData, function (d) {
+  var whiteCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "White") return d;
   }).length;
   console.log("whiteCount", whiteCount);
 
-  var asianCount = _.filter(policeData, function (d) {
+  var asianCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "Asian") return d;
   }).length;
   console.log("asianCount", asianCount);
 
-  var africanAmericanCount = _.filter(policeData, function (d) {
+  var africanAmericanCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "African American") return d;
   }).length;
   console.log("africanAmericanCount", africanAmericanCount);
 
-  var nativeAmericanCount = _.filter(policeData, function (d) {
+  var nativeAmericanCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "Native American") return d;
   }).length;
   console.log("nativeAmericanCount", nativeAmericanCount);
 
-  var otherCount = _.filter(policeData, function (d) {
+  var otherCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "Other") return d;
   }).length;
   console.log("otherCount", otherCount);
 
-  var unknownCount = _.filter(policeData, function (d) {
+  var unknownCount = _.filter(filteredData, function (d) {
     if (d["Person.Race"] == "Unknown") return d;
   }).length;
   console.log("unknownCount", unknownCount);
@@ -63,8 +66,8 @@ function drawBubbles() {
     ],
   };
 
-  var diameter = 300;
-  var color = d3.scaleOrdinal(d3.schemeCategory10);
+  var diameter = 280;
+  var color = d3.scaleOrdinal(d3.schemeSet1);
 
   var bubble = d3.pack(raceObject).size([diameter, diameter]).padding(1.5);
 
@@ -73,7 +76,14 @@ function drawBubbles() {
     .append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
-    .attr("class", "bubble");
+    .attr("class", "bubble")
+    .attr("translate", (500, 0));
+
+  let toolTipDiv = d3
+    .select("body")
+    .append("div")
+    .attr("class", "tooltipItem")
+    .style("opacity", 0);
 
   var nodes = d3.hierarchy(raceObject).sum(function (d) {
     return d.Count;
@@ -103,6 +113,28 @@ function drawBubbles() {
     })
     .style("fill", function (d, i) {
       return color(i);
+    })
+    .on("mouseover", function (d) {
+      console.log("d", d.data);
+      let tInfo = `Race: ${d.data.Name}<br/>Count: ${d.data.Count}`;
+      d3.select(this)
+        .transition()
+        .duration("120")
+        .attr("opacity", "0.88")
+        .attr("stroke-width", "4");
+      toolTipDiv
+        .html(tInfo)
+        .style("left", d3.event.pageX + 10 + "px")
+        .style("top", d3.event.pageY - 5 + "px");
+      toolTipDiv.transition().duration("120").style("opacity", 1);
+    })
+    .on("mouseout", function (d, i) {
+      d3.select(this)
+        .transition()
+        .duration("50")
+        .attr("stroke-width", 1)
+        .attr("opacity", "1.0");
+      toolTipDiv.transition().duration("500").style("opacity", 0);
     });
 
   node
@@ -114,7 +146,11 @@ function drawBubbles() {
     })
     .attr("font-family", "sans-serif")
     .attr("font-size", function (d) {
-      return d.r / 5;
+      if (d.r / 5 <= 15) {
+        return 9;
+      } else {
+        return d.r / 5;
+      }
     })
     .attr("fill", "white");
 
