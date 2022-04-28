@@ -1,27 +1,12 @@
-var pieSvg;
-var width, height;
-var pieWidth, pieHeight, pieRadius;
-var margin = {left : 10, right: 10, top: 10, bottom: 10};
-var policeData;
-
-document.addEventListener("DOMContentLoaded", () => {
+function drawPie(postal) {
 	pieSvg = d3.select("#PieChart");
-  
+	margin = {left : 10, right: 10, top: 10, bottom: 10};
 	width = +pieSvg.style("width").replace("px", "");
 	height = +pieSvg.style("height").replace("px", "");
 	pieWidth = (width/2) - margin.left - margin.right;
 	pieHeight = (height/2) - margin.top - margin.bottom;
 	pieRadius = Math.min(pieWidth, pieHeight) / 2;
-  
-	// Load both files before doing anything else
-	Promise.all([
-	  d3.csv("data/police_shootings.csv"),
-	]).then(function (values) {
-	  policeData = values[0];
-	});
-});
 
-function drawPie(postal) {
 	pieSvg.selectAll("*").remove();
 	let genderData = {"Male":0,"Female":0};
 	let raceData = {};
