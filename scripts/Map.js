@@ -1,8 +1,7 @@
 var mapWidth, mapHeight, mapInnerWidth, mapInnerHeight;
 var mapMargin = { top: 40, bottom: 20, left: 150, right: 20 };
 var mapData, policeData, personSvg;
-var selectedState;
-
+var selectedStatePostal;
 document.addEventListener("DOMContentLoaded", () => {
   mapSvg = d3.select("#Map");
 
@@ -10,6 +9,22 @@ document.addEventListener("DOMContentLoaded", () => {
   mapHeight = +mapSvg.style("height").replace("px", "");
   mapInnerWidth = mapWidth - mapMargin.left - mapMargin.right;
   mapInnerHeight = mapHeight - mapMargin.top - mapMargin.bottom;
+
+  d3.select("#raceSelect")
+    .on("change",function(d){
+      var values = Array.from(this.options)
+        .filter(function(option) { return option.selected })
+        .map(function(option) { return option.value; });
+      raceSelection = values;
+      drawline();
+    });
+
+  d3.select("#genderSelect")
+    .on("change", function(d){
+      genderSelection = d3.select(this).property('value');
+      drawline();
+    })
+
 
   // Load both files before doing anything else
   Promise.all([
@@ -52,6 +67,8 @@ function drawMap() {
   let colorScale = d3.scaleSequential(d3.interpolateInferno)
                       .domain([min,max]);
 
+  mapColorScale = colorScale;
+
   let g = mapSvg.append("g");
   drawColorScale(g, colorScale);
 
@@ -88,6 +105,7 @@ function drawMap() {
     })
     .style('stroke', 'grey')
     .on("click", function (d, i) {
+      selectedStatePostal = d.properties.postal;
       drawline(d.properties.postal);
       drawPie(d.properties.postal);
       drawNovel(d.properties.postal);
