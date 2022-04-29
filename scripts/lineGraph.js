@@ -73,14 +73,16 @@ function drawline(postal) {
 
   //axes
   var x = d3.scaleTime()
-                  .domain([new Date(year = 2015), new Date(year = 2021)])
+                  .domain([new Date(year = 2015, monthIndex = 0), new Date(year = 2021, monthIndex = 0)])
                   .range([lineMargin.left, lineInnerWidth]);
 
   var y = d3.scaleLinear()
                   .domain([max+5, 0])
                   .range([lineMargin.top, lineInnerHeight]);
 
-  var xAxis = d3.axisBottom(x);
+  var xAxis = d3.axisBottom(x)
+                //.ticks(d3.timeYear, 1)
+                .tickFormat(d3.timeFormat('%Y'));
   
   var yAxis = d3.axisLeft(y);
 
@@ -111,9 +113,6 @@ function drawline(postal) {
           .call(g => g.selectAll(".tick line")
                       .attr("stroke-opacity", 0.5)
                       .attr("stroke-dasharray", "5.10"));
-  
-  xAxis.ticks(d3.timeYear, 1)
-        //.tickFormat(d3.timeFormat('%Y'))
 
   //Axis labels
   lineSvg.append("text")
@@ -133,7 +132,8 @@ function drawline(postal) {
 
   var line = d3.line()
                   .x(function(d) {
-                      return x(new Date(year = d["Year"]))})
+                    console.log(new Date(year = d["Year"], monthIndex = 0))
+                      return x(new Date(year = d["Year"], monthIndex = 0))})
                   .y(function(d) {
                       return y(d["Frequency"])})
   
@@ -151,7 +151,7 @@ function drawline(postal) {
           .data(lineData)
           .enter()
           .append("circle")
-          .attr("cx", function (d) { return x(new Date(d["Year"])); } )
+          .attr("cx", function (d) { return x(new Date(d["Year"], monthIndex = 0)); } )
           .attr("cy", function (d) { return y(d["Frequency"]); } )
           .attr("r", 4)
           .style("fill", "black");

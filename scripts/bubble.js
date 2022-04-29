@@ -69,7 +69,7 @@ function drawBubbles(statePostal) {
   };
 
   var diameter = 280;
-  var color = d3.scaleOrdinal(d3.schemeSet1);
+  var color = d3.scaleOrdinal(d3.schemeSet2);
 
   var bubble = d3.pack(raceObject).size([diameter, diameter]).padding(1.5);
 
@@ -116,6 +116,8 @@ function drawBubbles(statePostal) {
     .style("fill", function (d, i) {
       return color(i);
     })
+    .attr("stroke", "black")
+    .style("stroke-width", "2px")
     .on("mouseover", function (d) {
       console.log("d", d.data);
       let tInfo = `Race: ${d.data.Name}<br/>Count: ${d.data.Count}`;
